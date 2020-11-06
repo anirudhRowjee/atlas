@@ -2,7 +2,7 @@
 
 ## What
 
-Atlas is an open-source tool to conduct authenticated ranked-choice elections. The administrator can choose candidates, who authenticated voters can rank in order of their choice. When the administrator chooses to tabulate the votes, a [ranked-choice instant runoff]() election is conducted, and the winner is declared.
+Atlas is an open-source tool to conduct authenticated ranked-choice elections. The administrator can choose candidates, who authenticated voters can rank in order of their choice. When the administrator chooses to tabulate the votes, a [ranked-choice instant runoff](https://en.wikipedia.org/wiki/Instant-runoff_voting) ([this](https://www.youtube.com/watch?v=3Y3jE3B8HsE) video explains it _really_ well) election is conducted, and the winner is declared.
 
 The uses of this framework are limited only by your voter base and imagination. As of now, the planned use-case is to deploy atlas as a decision framework for upcoming livestream/event topics. 
 
