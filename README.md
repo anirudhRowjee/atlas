@@ -13,5 +13,54 @@ _Deliberate on the Tech Stack here._
 Proposed - 
 
 **Backend** Flask, with a persistent data store (SQLite?)
+
+
 **Frontend** React
+
+
 **Authenticator** Custom authenticator based on Github Repo of members, possible OAuth?
+
+
+## Getting started
+
+1. Fork this Repository to your Github Account
+
+2. Clone this repository to your computer/workspace.
+
+3. Switch to a new branch.
+
+```bash
+$ git checkout -b <my-new-branch>
+```
+for example,
+```bash
+$ git checkout -b documentation-changes
+```
+
+4. Setup your virtual environment
+```bash
+# `pip install virtualenv` or  `pip3 install virtualenv` (if you don't already have it installed)
+$ virtualenv env
+$ source env/bin/activate
+# on windows 
+# .\env\Scripts\activate
+```
+Your terminal prompt should look something like this-
+```
+(env) $ 
+```
+
+5. Install all dependencies
+```
+(env) $ pip install -r requirements.txt
+```
+
+6. Run the Application
+```
+(env) $ <TODO>
+```
+
+If you want to run the tests - 
+```
+(env) $ python tests.py
+```
