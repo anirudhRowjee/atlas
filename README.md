@@ -6,19 +6,12 @@ Atlas is an open-source tool to conduct authenticated ranked-choice elections. T
 
 The uses of this framework are limited only by your voter base and imagination. As of now, the planned use-case is to deploy atlas as a decision framework for upcoming livestream/event topics. 
 
+**It has been decided that Atlas will be implemented as a Slack bot. The rest of the details, apart from the core purpose, is still WIP**
+
 ## How
 
 _Deliberate on the Tech Stack here._
 
-Proposed - 
-
-**Backend** Flask, with a persistent data store (SQLite?)
-
-
-**Frontend** React
-
-
-**Authenticator** Custom authenticator based on Github Repo of members, possible OAuth?
 
 
 ## Getting started

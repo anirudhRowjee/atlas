@@ -48,6 +48,7 @@ There are some basic constraints within which this implementation works.
 3. Each Voter can order their preferences
 """
 from uuid import uuid4
+from typing import List, Dict, Tuple
 
 
 class Candidate:
@@ -57,35 +58,50 @@ class Candidate:
     @param id: string - UUID4
     @param votes: integer - number of votes
     @param eliminated: boolean - elimination status of the candidate
+
+    @mtethod eliminate - eliminates the candidate
     """
 
-    def __init__(self, name):
-        self.id = uuid4().hex
-        self.name = name
-        self.votes = 0
-        self.eliminated = False
+    def __init__(self: Candidate, name: str) -> None:
+        self.id: str = uuid4().hex
+        self.name: str = name
+        self.votes: int = 0
+        self.eliminated: bool = False
+
+    def eliminate(self: Candidate) -> None:
+        # method to eliminate self
+        if self.eliminated:
+            raise Exception("Candidate is already eliminated")
+        else:
+            self.eliminated = True
+
+    def addVote(self: Candidate) -> None:
+        # add a vote to the candidate
+        self.votes += 1
 
 
 class Voter:
-    def __init__(self, name, preferences_list):
-        """
-        Voter class - holds all information of every voter, along with the
-        preference lists
-        @param id: string - UUID4
-        @param name: string - name of voter
-        @param preferences_list: List[Voter] - ordered preference list of voters
-        """
-        self.id = uuid4().hex
-        self.name = name
-        self.preferences_list = preferences_list
+    """
+    Voter class - holds all information of every voter, along with the
+    preference lists
+    @param id: string - UUID4
+    @param name: string - name of voter
+    @param preferences_list: List[Voter] - ordered preference list of voters
+    """
+
+    def __init__(self: Voter, name: str, preferences_list: List[Candidate]) -> None:
+        self.id: str = uuid4().hex
+        self.name: str = name
+        self.preferences_list: List[Candidate] = preferences_list
 
 
 class Election:
     """
     Election Class->
 
-    # TODO dubious terminology
+    #TODO dubious terminology
     @data winner: Candidate - Candidate who wins the election
+    @data majority: int - number of votes required to be considered a victor
     @param voters: List[Voter] - list of all voters in the election
     @param candidates: List[Candidate] - list of all candidates in the election
 
@@ -93,38 +109,108 @@ class Election:
         * Iterate through the list of the candidates to find the latest
         candidate in each voters' preference list that has not been eliminated.
         Add a vote to this candidate
-    @method addvote(candidate: Candidate) -> None
-        * Add a vote to the candidate.
-    @method eliminate(candidate: Candidate) -> None
-        * eliminiate a candidate after they recieve the lowest votes.
     """
 
-    def __init__(self, voters, candidates):
+    def __init__(self, voters: List[Voter], candidates: List[Candidate]) -> None:
         """
         constructor
         @param voters - list of voters with their preference lists
         @param candidates - list of all candidates with their statuses
         """
-        self.voters = voters
-        self.candidates = candidates
-        self.winner = None
+        self.voters: List[Voter] = voters
+        # make this a dict so it's easier to lookup candidates to add voters or
+        # eliminate candidates - this lookup is constant time
+        self.candidates: Dict[str, Candidate] = {x.id: x for x in candidates}
+        self.winner: Candidate = None
+        # majority count - 50% + 1
+        self.majority: int = int(len(self.voters) / 2) + 1
 
-    def eliminate(candidate):
-        # eliminate a voter
-        # TODO
-        pass
+    def get_polar_candidates(self: Election) -> List[str]:
+        # return the id's of the candidates with the lowest number of votes and
+        # highest number of votes
+        # there might be a better way to do this
+        # TODO optimize
+        candidates_and_votes: List[List[str, int]] = [
+            [candidate.id, candidate.votes] for candidate in self.candidates
+        ]
+        # sort this list by the number of votes
+        candidates_and_votes.sort(key=lambda x: x[1])
 
-    def addvote(candidate):
-        # add a vote to a candidate
-        # TODO
-        pass
+        # find the number of candidates with the lowest number of votes
+        lowest_votes_candidate: Candidate = candidates_and_votes[0]
+        highest_votes_candidate: Candidate = candidates_and_votes[-1]
 
-    def tabulate():
+        # return the required IDs
+        return (lowest_votes_candidate.id, highest_votes_candidate.id)
+
+    def add_vote_to_candidate(self: Election, candidate_id: str) -> None:
+        # add a vote to the candidate by ID
+        try:
+            candidate: Candidate = self.candidates[candidate_id]
+            candidate.addVote()
+        except KeyError:
+            print(f"Candidate with ID {candidate_id} does not exist")
+            exit()
+
+    def eliminate_candidate(self: Election, candidate_id: str) -> None:
+        # eliminate a candidate by id
+        try:
+            candidate: Candidate = self.candidates[candidate_id]
+            candidate.eliminate()
+        except KeyError:
+            print(f"Candidate with ID {candidate_id} does not exist")
+            exit()
+
+    def tabulate(self: Election, candidate_id: str) -> None:
         # tabulate the election results
-        # TODO
-        pass
 
-    def run():
+        for voter in self.voters:
+            # parse the preferences of the voter until we find the first valid
+            # (non-eliminated) candidate, who will be counted as the choice
+            # break at the first candidate who isn't eliminated
+            choice: Candidate = None
+            # using for over while here as failing is easier, given we are
+            # allowing voters to also have no choices
+            for preference in voter.preferences_list:
+                # set the current choice
+                choice = preference
+                if not preference.eliminated:
+                    # since we have found a valid candidate, we break
+                    break
+                else:
+                    # the hunt goes on
+                    continue
+            # register a vote for the candidate in Choice
+            # sanity check for no votes registered
+            if choice == None:
+                print("no vote registered")
+                pass
+            else:
+                choice.addVote()
+
+        # find the candidates with max and min votes
+        highest_votes_candidate_id: str
+        lowest_votes_candidate_id: str
+        (
+            highest_votes_candidate_id,
+            lowest_votes_candidate_id,
+        ) = self.get_polar_candidates()
+
+        # not checking for existance here as the origin of IDs is the single
+        # source of truth for all the candidate data
+        highest_votes_candidate: Candidate = self.candidates[highest_votes_candidate_id]
+        lowest_votes_candidate: Candidate = self.candidates[lowest_votes_candidate_id]
+
+        if highest_votes_candidate.votes >= self.majority:
+            # this candidate has won
+            this.winner = highest_votes_candidate
+        else:
+            # drop the lowest candidate
+            self.eliminate_candidate(lowest_votes_candidate_id)
+            print(f"Eliminated candidate {lowest_votes_candidate}")
+
+    def run(self: Election) -> Candidate:
         while not self.winner:
             self.tabulate()
         print(self.winner.name)
+        return self.winner
