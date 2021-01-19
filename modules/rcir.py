@@ -62,20 +62,20 @@ class Candidate:
     @mtethod eliminate - eliminates the candidate
     """
 
-    def __init__(self: Candidate, name: str) -> None:
+    def __init__(self, name: str) -> None:
         self.id: str = uuid4().hex
         self.name: str = name
         self.votes: int = 0
         self.eliminated: bool = False
 
-    def eliminate(self: Candidate) -> None:
+    def eliminate(self) -> None:
         # method to eliminate self
         if self.eliminated:
             raise Exception("Candidate is already eliminated")
         else:
             self.eliminated = True
 
-    def addVote(self: Candidate) -> None:
+    def addVote(self) -> None:
         # add a vote to the candidate
         self.votes += 1
 
@@ -89,7 +89,7 @@ class Voter:
     @param preferences_list: List[Voter] - ordered preference list of voters
     """
 
-    def __init__(self: Voter, name: str, preferences_list: List[Candidate]) -> None:
+    def __init__(self, name: str, preferences_list: List[Candidate]) -> None:
         self.id: str = uuid4().hex
         self.name: str = name
         self.preferences_list: List[Candidate] = preferences_list
@@ -125,7 +125,7 @@ class Election:
         # majority count - 50% + 1
         self.majority: int = int(len(self.voters) / 2) + 1
 
-    def get_polar_candidates(self: Election) -> List[str]:
+    def get_polar_candidates(self) -> List[str]:
         # return the id's of the candidates with the lowest number of votes and
         # highest number of votes
         # there might be a better way to do this
@@ -143,7 +143,7 @@ class Election:
         # return the required IDs
         return (lowest_votes_candidate.id, highest_votes_candidate.id)
 
-    def add_vote_to_candidate(self: Election, candidate_id: str) -> None:
+    def add_vote_to_candidate(self, candidate_id: str) -> None:
         # add a vote to the candidate by ID
         try:
             candidate: Candidate = self.candidates[candidate_id]
@@ -152,7 +152,7 @@ class Election:
             print(f"Candidate with ID {candidate_id} does not exist")
             exit()
 
-    def eliminate_candidate(self: Election, candidate_id: str) -> None:
+    def eliminate_candidate(self, candidate_id: str) -> None:
         # eliminate a candidate by id
         try:
             candidate: Candidate = self.candidates[candidate_id]
@@ -161,7 +161,7 @@ class Election:
             print(f"Candidate with ID {candidate_id} does not exist")
             exit()
 
-    def tabulate(self: Election, candidate_id: str) -> None:
+    def tabulate(self, candidate_id: str) -> None:
         # tabulate the election results
 
         for voter in self.voters:
@@ -209,7 +209,7 @@ class Election:
             self.eliminate_candidate(lowest_votes_candidate_id)
             print(f"Eliminated candidate {lowest_votes_candidate}")
 
-    def run(self: Election) -> Candidate:
+    def run(self) -> Candidate:
         while not self.winner:
             self.tabulate()
         print(self.winner.name)
